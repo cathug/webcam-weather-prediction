@@ -6,9 +6,12 @@ This submission contains several prediction models for the Webcam Weather
 Prediction assignment.
 
 
+
+---
+
 ## Platform, required libraries and files
 The Python code is tested in Ubuntu 16.04 but theoretically should also work in 
-Windows and MacOS.  You also have to have the following libraries and packages
+Windows and MacOS.  You also need to have the following libraries and packages
 installed:
 
 * `python3`
@@ -21,8 +24,10 @@ installed:
 
 You will also have to download the katkam images and Environment Canada historical
 weather data from the following links:
+
 [Katkam Images](https://courses.cs.sfu.ca/2017su-cmpt-318-d1/pages/ProjectWeatherKatkam)
 [Weather Data](https://courses.cs.sfu.ca/2017su-cmpt-318-d1/pages/ProjectWeatherWeather)
+
 ---
 
 ## Running the code in Python
