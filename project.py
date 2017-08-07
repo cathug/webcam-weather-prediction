@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import re, glob, sys
+import re, glob, sys, zipfile
 from skimage import io
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
@@ -14,11 +14,10 @@ from sklearn.decomposition import PCA
 from skimage.transform import rescale
 
 
-csv_directory = sys.argv[1]  # csv folder
-image_directory = sys.argv[2] # image path directory
 preprocessor = sys.argv[3]    # preprocessing option
 reg_pattern = 'katkam\W([\d]+)' 
-
+csv_directory = 'yvr-weather'
+image_directory = 'katkam-scaled'
 OUTPUT = (
     '\nPreprocessing method: {method}\n'
     '-----------------------\n'
@@ -196,15 +195,15 @@ def separate_image_layers(image_rgb):
 
 
 
-    
-
-
 #------------------------------------------------------------------------------
 # Main function
 #------------------------------------------------------------------------------
 
 def main():
-    # create dataframe from csv files
+    # create dataframe from csv files in zip
+    with zipfile.ZipFile(sys.argv[1],"r") as csv_zip:
+        csv_zip.extractall()
+        
     csv_files = glob.glob(csv_directory + '/*.csv')
     
     # make sure csv directory is not empty
@@ -215,8 +214,7 @@ def main():
     dataframes = []
 
     for csv_file in csv_files:
-        table = pd.read_csv(csv_file, sep=',', 
-                            skiprows=16, parse_dates=[0])
+        table = pd.read_csv(csv_file, sep=',', skiprows=16, parse_dates=[0])
         dataframes.append(table)
     df = pd.concat(dataframes)
 #    printUniqueValueInEachColumn(df)
@@ -225,6 +223,9 @@ def main():
     
     
     # create dataframe from image file names
+    with zipfile.ZipFile(sys.argv[2],"r") as image_zip:
+        image_zip.extractall()
+        
     image_files = glob.glob(image_directory + '/*.jpg')
     
     # make sure image file directory is not empty
