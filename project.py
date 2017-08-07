@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import re, glob
+import re, glob, sys
 from skimage import io
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
@@ -9,19 +9,35 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.feature_extraction.image import extract_patches_2d
+from sklearn.decomposition import PCA
+from skimage.transform import rescale
 
 
-csv_directory = sys.argv[1]  # folder
+csv_directory = sys.argv[1]  # csv folder
 image_directory = sys.argv[2] # image path directory
+preprocessor = sys.argv[3]    # preprocessing option
 reg_pattern = 'katkam\W([\d]+)' 
 
+OUTPUT = (
+    '\nPreprocessing method: {method}\n'
+    '-----------------------\n'
+    'bayes model accuracy: {bayes_accuracy:.3g}\n'
+    'k_neighbour model accuracy: {k_neighbour_accuracy:.3g}\n'
+    'svc model accuracy: {svc_accuracy:.3g}\n'
+)
 
-# function to check list of columns in dataframe 
-def printValueCountsInEachColumn(df):
+
+#------------------------------------------------------------------------------
+# Dataframe helper functions
+#------------------------------------------------------------------------------
+# function to print out unique items in each dataframe column
+def printUniqueValueInEachColumn(df):
     headers = list(df)
     for header in headers:
         print(header + "\n")
         print(str(df[header].value_counts().index) + "\n\n")
+
 
 
 
@@ -43,71 +59,113 @@ def extract_filename(path):
         return match_reg_pattern.group(0)
 
 
-
-def add_image(imagepath):
+# function takes an image path,
+# extracts the image array,
+# separates it into separate r, g, b layers
+# and returns a weighted average value from each layer
+def add_image0(imagepath):
     image = io.imread(imagepath)
-    #titles = "red layer", "green layer", "blue layer"
-    image_r, image_g, _ = separate_image_layers(image)
-    #display_image(image_rgb_layers,titles)
-    average = np.average([image_r, image_g])
-    #return image_r
+    image_r, image_g, image_b = separate_image_layers(image)
+    average_r = np.average(image_r)
+    average_g = np.average(image_g)
+    average_b = np.average(image_b)
+    return average_r + average_g + average_b
+
+
+
+# function takes an image path
+# extracts the image array,
+# scale it 1/4 size
+# reshape each image to a 1D array
+# and returns a weighted average value from each layer
+# NOTE: to be used with PCA only
+def add_image1(imagepath):
+    image = io.imread(imagepath)
+    image_rescaled = rescale(image, 0.25, mode='reflect') # 1/4 scale to overcome memory issues
+    output = image_rescaled.reshape(1, -1) # reshape to 1D array
+    return np.squeeze(output)
+    
+
+
+# function takes an image path
+# extracts the image array,
+# divides the image to random patches and takes the average value 
+def add_image2(imagepath):
+    image = io.imread(imagepath)
+    patches = extract_patches_2d(image, (24, 32), max_patches=8, 
+        random_state=np.random.RandomState(0))
+    average = np.average(patches)
+    return average
+
+
+# function takes an image path
+# extracts the image array,
+# crops out the sky and returns its average 
+def add_image3(imagepath):
+    image = io.imread(imagepath)
+    sky = image[:48,:256,:]
+    average = np.average(sky)
     return average
     
     
-# remove certainty items in weather column
-def clean_description(string):    
-    if str(string) == 'nan':
-        return None
+# function takes an image path
+# extracts the image array,
+# crops out the sky, tree, road, sea sections and takes average
+def add_image4(imagepath):
+    image = io.imread(imagepath)
+    sky = image[:96,:256,:]
+    sky_patches = extract_patches_2d(sky, (12, 16), 
+        max_patches=8, random_state=np.random.RandomState(0))
+    road = image[150:,:50,:]
+    trees = image[144:175,210:,:]
+    sea = image[125:,100:200,:]
+#    bottom = image[96:, 128:, :]
     
-    words = str(string).replace(' ', ',').split(sep=',')
-#    if (len(words) == 1) & (words[0] == 'Drizzle'):
-#        words[0] = 'Rain'
- #   if (len(words) > 1) & (words[1] == 'Drizzle'):
- #       words.remove('Drizzle') 
+    average1 = np.average(sky_patches)
+    #average1 = np.average(sky)
+    average2 = np.average(trees)
+    average3 = np.average(road)
+    average4 = np.average(sea)
+    #total = average1 + average2 + average3 + average4
+    #return total
+    return average1, average2, average3, average4   
     
-    for word in words:
+    
+# function to remove certainty items in weather column
+def clean_description(stringlist):            
+    contains = 'Heavy|Moderate|Mostly|Mainly|Showers|Pellets|Fog|Freezing|nan'
+    
+    # remove matching words in list    
+    for word in stringlist:        
+        match = re.match(contains, word)
+        if match:
+            stringlist.remove(word)
         
-        for m in re.findall('Heavy|Moderate|Mostly|Mainly|Showers|Pellets', word):
-            if m:
-                words.remove(m)
-    return ','.join(words)
+    # remove repetition or if string contains "Fog"
+    while len(stringlist) > 0:
+        if ( (len(stringlist) > 1) and (stringlist[0] == stringlist[-1]) ) \
+            or (stringlist[-1] == 'Fog'):
+            stringlist.remove(stringlist[-1])
+        else:
+            break
+    
+    output = ','.join(stringlist)
+    if output == "":
+        return None
+#    elif output == 'Rain,Snow':
+#        return 'Rain'
+#    elif output == 'Thunderstorms':
+#        return 'Rain'
+    
+    # else
+    return output
+
+
+
+
 #------------------------------------------------------------------------------
-
-
-
-# clean data in dataframe
-def cleanData(df):
-    # change column names
-    df.columns = ['path', 'filename', 'date', 'temp', 'dew_temp', 
-        'rel_hum', 'wind_dir','wind_speed',
-        'visibility','pressure', 'hmdx','weather']
-    
-    # replace NaN instances with none in weather column
-    df['weather'].fillna('None', inplace=True)
-    
-    # list of weather descriptions
-    weather_desc_list = df['weather'].value_counts().index
-
-    # split them to individual words
-    desc = np.unique(
-        np.concatenate(weather_desc_list.str.split('[, ]') ) 
-    )
-    
-    
-    atmos = np.array([desc[0], desc[1], desc[3], desc[4]])
-    precp = np.array([desc[10], desc[11], desc[12], desc[13], desc[14]])
-    quantity = np.array([desc[2], desc[5], desc[7], desc[8], desc[6]])
-    print(atmos)
-    print(precp)
-    print(amount)
-    
-    return df#, atmos, precp, quantity
-
-
-
-
-
-
+# Image output functions
+#------------------------------------------------------------------------------
 
 # The following two functions are adapted from 
 # http://blog.yhat.com/posts/image-processing-with-scikit-image.html
@@ -128,7 +186,7 @@ def display_image(images_rgb, titles):
     
 def separate_image_layers(image_rgb):
     image_r, image_g, image_b = \
-    image.copy(), image.copy(), image.copy()
+        image_rgb.copy(), image_rgb.copy(), image_rgb.copy()
     # switch off other color layers to show isolated r, g, b layers
     image_r[:,:,(1,2)] = 0
     image_g[:,:,(0,2)] = 0
@@ -138,10 +196,22 @@ def separate_image_layers(image_rgb):
 
 
 
-def main():
+    
 
+
+#------------------------------------------------------------------------------
+# Main function
+#------------------------------------------------------------------------------
+
+def main():
     # create dataframe from csv files
     csv_files = glob.glob(csv_directory + '/*.csv')
+    
+    # make sure csv directory is not empty
+    if len(csv_files) <= 0:
+        print("no csv files to process")
+        return 
+    
     dataframes = []
 
     for csv_file in csv_files:
@@ -149,12 +219,18 @@ def main():
                             skiprows=16, parse_dates=[0])
         dataframes.append(table)
     df = pd.concat(dataframes)
-#    printValueCountsInEachColumn(df)
+#    printUniqueValueInEachColumn(df)
 
-
+    
+    
     
     # create dataframe from image file names
     image_files = glob.glob(image_directory + '/*.jpg')
+    
+    # make sure image file directory is not empty
+    if len(image_files) <= 0:
+        print("no image files to process")
+        return 
 
     image_df = pd.DataFrame({'path' : image_files})
     image_df['filename'] = image_df['path'].apply(extract_filename)
@@ -163,86 +239,103 @@ def main():
         image_df['path'].apply(extract_date),
         infer_datetime_format=True
     )
-
-
-    #filter out empty columns and clean data
-    # according to printValueCountsInEachColumn 
-    # columns are null, except Hmdx column which has 103 non-null items
-    df = df.select(
-        lambda x: not re.search(
-            'Quality|Flag|Year|Month|Day|^Time|Chill|Hmdx', x), 
-        axis=1
-    )
-
-    df = image_df.merge(df, how='left', on='Date/Time')
-    df, atmos, precp, quantity = cleanData(df)
+    
+    
+    
+    # preclean image_df
+    # get data of each image, depending on preprocessing options
+    if preprocessor == '0':
+        image_df['image'] = image_df['path'].apply(add_image0)
+    elif preprocessor == '1':
+        image_df['image'] = image_df['path'].apply(add_image1)
+    elif preprocessor == '2':
+        image_df['image'] = image_df['path'].apply(add_image2)
+    elif preprocessor == '3':
+        image_df['image'] = image_df['path'].apply(add_image3)
+    elif preprocessor == '4':
+        image_df['image'] = image_df['path'].apply(add_image4)
+    else:
+        print("Invalid preprocessing option: must be 0, 1, 2, 3, or 4")
+        return
         
-    df['weather_desc'] = df['weather_desc'].apply(clean_description)
+    
+    # separate tuple/array data into columns
+    image_vals = image_df['image'].apply(pd.Series)
+    image_df.drop(labels=['path', 'filename', 'image'], axis=1, inplace=True)
+    image_vals = image_df.merge(image_vals, how='left', left_index=True, right_index=True)
 
 
-    # machine learning shit here
-    weather_described = df[(df['weather'].notnull()) & 
-                       (df['temp'].notnull()) &
-                       (df['dew_temp'].notnull()) &
-                       (df['rel_hum'].notnull()) &
-                       (df['wind_speed'].notnull()) &
-                       (df['wind_dir'].notnull()) &
-                       (df['visibility'].notnull()) &
-                       (df['pressure'].notnull()) ]
+    # preclean df
+    # remove NaN columns and columns consisting mostly of NaN
+    df.dropna(axis=1, how='all', inplace=True)
+    df = df.select(lambda x: not re.search('Quality|Chill|Hmdx', x), axis=1)
+        
+        
+    # change column names
+    df.columns = ['Date/Time', 'year', 'month', 'day', 'hour',
+                  'temp', 'dew_temp', 'rel_hum', 'wind_dir',
+                  'wind_speed', 'visibility', 'pressure', 'weather']
 
-    X = weather_described.loc[:, weather_described.columns.isin(
-        ['path', 'date', 'temp', 'dew_temp', 'rel_hum', 'wind_dir', 
-         'wind_speed', 'visibility', 'pressure']
-    )]
 
-    X['image'] = X['path'].apply(add_image)
-    X.drop(['path', 'date', 'temp'], axis=1, inplace=True)
+    # merge dataframes df and image_vals
+    df = image_vals.merge(df, how='left', on='Date/Time')
+    
+    
+    # clean time 
+    df.drop(labels=['Date/Time'], axis=1, inplace=True)
+    df['hour'] = pd.to_datetime(df['hour'], format='%H:%M').dt.hour # keep hour only
+    
+
+    # clean the weather labels
+    df['weather'] = df['weather'].astype('str') 
+    df['weather'].replace(to_replace='Drizzle', value='Rain', inplace=True, regex=True)
+    df['weather'] = df['weather'].str.split(pat=' |,')
+    df['weather'] = df['weather'].apply(clean_description)
+    #df['weather'].value_counts()
+        
+    
+
+
+    # create_ml_datasets
+    weather_described = df.dropna(axis=0, how='any') #select rows without null values
+    X = weather_described.drop(labels=['weather'], axis=1)
     y = weather_described['weather']
     X_train, X_test, y_train, y_test = train_test_split(X, y)
-
-
-    bayes = make_pipeline(
-        StandardScaler(),
-        GaussianNB()
-    )
-
-    bayes.fit(X_train, y_train)
-    print(bayes.score(X_test,y_test))
-
-
-    svc = make_pipeline(
-        StandardScaler(),
-        SVC(kernel='rbf', C=10)
-    )
-    svc.fit(X_train, y_train)
-    print(svc.score(X_test,y_test))
     
+    
+    
+    # create bayes, k-neighbor, and svc models
+    bayes = make_pipeline(
+        StandardScaler(), 
+        GaussianNB() 
+    )
     
     k_neighbour = make_pipeline(
-    StandardScaler(),
-    KNeighborsClassifier(n_neighbors=5)
+        StandardScaler(),
+        KNeighborsClassifier(n_neighbors=8)
     )
+    
+    svc = make_pipeline(
+        StandardScaler(),
+        SVC(kernel='rbf', C=5)
+    )
+    
 
+    # fit models
+    bayes.fit(X_train, y_train)
     k_neighbour.fit(X_train, y_train)
-    k_neighbour.score(X_test,y_test)
+    svc.fit(X_train, y_train)
+    
+    
+    # print scores
+    print(OUTPUT.format(
+        method = preprocessor,
+        bayes_accuracy = bayes.score(X_test,y_test),
+        k_neighbour_accuracy = k_neighbour.score(X_test,y_test),
+        svc_accuracy = svc.score(X_test,y_test)
+    ))
 
-
-#    image = io.imread(df['path'].iloc[5036])
-#    titles = "red layer", "green layer", "blue layer"
-
-#    image_rgb_layers = separate_image_layers(image)
-#    display_image(image_rgb_layers,titles)
-
-
-#df['weather']=
-#get_certainty_description(df['split'].iloc[1], 0)
-
-
-#pd.pivot_table(df, index=['weather_desc'])
-#reg = re.compile("^weather\W[\d]+\W[\d]+.csv")
-#file = "weather-51442-201606.csv"
-#reg.match(file)
-
-
+    
+    
 if __name__ == '__main__':
     main()

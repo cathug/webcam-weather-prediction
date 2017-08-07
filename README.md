@@ -33,9 +33,10 @@ weather data from the following links:
 ## Running the code in Python
 In terminal or bash, type in
 
-    `python3 project.py WEATHER-CSV-FILE-DIRECTORY KATKAM-IMAGE-DIRECTORY`
+    python3 project.py WEATHER-CSV-FILE-DIRECTORY KATKAM-IMAGE-DIRECTORY PREPROCESSOR_OPTION
 
 where WEATHER-CSV-FILE-DIRECTORY and KATKAM-IMAGE-DIRECTORY are the path
-of your folders containing unzipped weather data and the katkam images.
+of your folders containing unzipped weather data and the katkam images, and
+PREPROCESSOR_OPTION can be 0, 1, 2, 3, or 4.
 
 The accuracy of each prediction model is printed on the console.
