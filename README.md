@@ -37,4 +37,13 @@ In terminal or bash, type in
 
 where the PREPROCESSOR_OPTION can be 0, 1, 2, 3, or 4.
 
-Terminal will output the accuracy of each prediction model on the screen.
+Terminal will output the accuracy of each prediction model on the screen.  For 
+instance, below is a sample terminal output when PREPROCESSOR_OPTION = 0
+
+    Preprocessing method: 0
+    -----------------------
+    bayes model accuracy: 0.708
+    k_neighbour model accuracy: 0.708
+    svc model accuracy: 0.769
+
+

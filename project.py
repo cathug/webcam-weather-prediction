@@ -3,7 +3,7 @@ import numpy as np
 import re, glob, sys, zipfile
 from skimage import io
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
+#from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
@@ -106,11 +106,21 @@ def add_image3(imagepath):
     average = np.average(sky)
     return average
     
+
+# function takes an image path
+# extracts the image array,
+# crops out the sky and returns the corresponding reshaped 1D array
+def add_image4(imagepath):
+    image = io.imread(imagepath)
+    sky = image[:48,:256,:]
+    output = sky.reshape(1, -1) # reshape to 1D array
+    return np.squeeze(output)
+    
     
 # function takes an image path
 # extracts the image array,
 # crops out the sky, tree, road, sea sections and takes average
-def add_image4(imagepath):
+def add_image5(imagepath):
     image = io.imread(imagepath)
     sky = image[:96,:256,:]
     sky_patches = extract_patches_2d(sky, (12, 16), 
@@ -255,8 +265,10 @@ def main():
         image_df['image'] = image_df['path'].apply(add_image3)
     elif preprocessor == '4':
         image_df['image'] = image_df['path'].apply(add_image4)
+    elif preprocessor == '5':
+        image_df['image'] = image_df['path'].apply(add_image5)
     else:
-        print("Invalid preprocessing option: must be 0, 1, 2, 3, or 4")
+        print("Invalid preprocessing option: must be between 0 and 5")
         return
         
     
@@ -297,12 +309,6 @@ def main():
     
 
 
-    # create_ml_datasets
-    weather_described = df.dropna(axis=0, how='any') #select rows without null values
-    X = weather_described.drop(labels=['weather'], axis=1)
-    y = weather_described['weather']
-    X_train, X_test, y_train, y_test = train_test_split(X, y)
-    
     
     
     # create bayes, k-neighbor, and svc models
@@ -321,20 +327,45 @@ def main():
         SVC(kernel='rbf', C=5)
     )
     
-
-    # fit models
-    bayes.fit(X_train, y_train)
-    k_neighbour.fit(X_train, y_train)
-    svc.fit(X_train, y_train)
+    
+    # create_ml_datasets
+    weather_described = df.dropna(axis=0, how='any') #select rows without null values
+    X = weather_described.drop(labels=['weather'], axis=1)
+    y = weather_described['weather']
+    
+    if preprocessor == 1 or preprocessor == 4:
+        pca = PCA(20)
+        X_pca = pca.fit_transform(X)
+        
+        # fit models
+        bayes.fit(X_pca, y)
+        k_neighbour.fit(X_pca, y)
+        svc.fit(X_pca, y)
+        
+        # print scores
+        print(OUTPUT.format(
+            method = preprocessor,
+            bayes_accuracy = bayes.score(X_pca, y),
+            k_neighbour_accuracy = k_neighbour.score(X_pca, y),
+            svc_accuracy = svc.score(X_pca, y)
+        ))
+    
+    else:
+        # fit models
+        bayes.fit(X, y)
+        k_neighbour.fit(X, y)
+        svc.fit(X, y)
+    
+        # print scores
+        print(OUTPUT.format(
+            method = preprocessor,
+            bayes_accuracy = bayes.score(X, y),
+            k_neighbour_accuracy = k_neighbour.score(X, y),
+            svc_accuracy = svc.score(X, y)
+        ))
     
     
-    # print scores
-    print(OUTPUT.format(
-        method = preprocessor,
-        bayes_accuracy = bayes.score(X_test,y_test),
-        k_neighbour_accuracy = k_neighbour.score(X_test,y_test),
-        svc_accuracy = svc.score(X_test,y_test)
-    ))
+    
 
     
     
