@@ -42,8 +42,7 @@ instance, below is a sample terminal output when PREPROCESSOR_OPTION = 0
 
     Preprocessing method: 0
     -----------------------
-    bayes model accuracy: 0.708
-    k_neighbour model accuracy: 0.708
-    svc model accuracy: 0.769
-
+    bayes model accuracy: 0.69
+    k_neighbour model accuracy: 0.78
+    svc model accuracy: 0.836
 
