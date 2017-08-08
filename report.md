@@ -111,7 +111,7 @@ Processing method | Classifier | Accuracy Score
   | SVN | 0.874
 
 *\* methods with PCA applied*    
- **Table 1** *Results using naïve Bayes classifier*   
+ **Table 1** *Summary of results using naïve Bayes, k-neighbour, and SVN classifiers*   
 
 
 A best accuracy score of 88.8% is achieved using `add_image1()` with SVN 
