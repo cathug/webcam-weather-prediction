@@ -89,7 +89,7 @@ sets.  Methods `add_image1()` and `add_image4()` use PCA reduction to speed up
 classification speeds.  The accuracy scores are shown below:
 
 
-Processing method | Classifier | Accuracy Score 
+Processing method | Classifier | Accuracy Score
 ----------------- | ---------- | --------------
 `add_image0()` | Naïve Bayes | 0.69
   | k-neighbour | 0.78 
@@ -114,14 +114,15 @@ Processing method | Classifier | Accuracy Score
  **Table 1** *Results using naïve Bayes classifier*   
 
 
-
+A best accuracy score of 88.8% is achieved using `add_image1()` with SVN 
+classifier but it is also one of the slowest methods.  The runner up (87.4%) is
+`add_image1()` with SVN classifier and is also one of the faster methods.
 
 ## Post-mortem
-Problems: 
-Memory and speed issues: images have to be kept at 1/4 scale (64 x 48 pixels) before
-applying PCA reduction.
+It would be interesing to see if the best accuracy score achieved with `add_image1`
+can be further improved with full scale images.  But 88.8% accuracy is not a bad
+score at all.
 
-Limitations:
-
-To try:
-LAB instead of RGB
+Also if time permits, it would be interesting to see if converting the images
+to LAB and HSV will affect the accuracy scores given that the latter two are
+more accurate color space models. 
