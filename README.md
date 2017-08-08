@@ -35,7 +35,10 @@ In terminal or bash, type in
 
     python3 project.py weather.zip katkam-secret-location.zip PREPROCESSOR_OPTION
 
-where the PREPROCESSOR_OPTION can be 0, 1, 2, 3, or 4.
+where the PREPROCESSOR_OPTION can be between 0 and 5.
+
+Please take into account the time required to execute the command with
+preprocessor options 1 or 4.
 
 Terminal will output the accuracy of each prediction model on the screen.  For 
 instance, below is a sample terminal output when PREPROCESSOR_OPTION = 0
@@ -46,3 +49,10 @@ instance, below is a sample terminal output when PREPROCESSOR_OPTION = 0
     k_neighbour model accuracy: 0.78
     svc model accuracy: 0.836
 
+
+Alternatively a bash script `script.sh` is created to batch test the code and
+save you time on typing repetitive commands on terminal.  This option comes in 
+handy when for some reason you want to iterate all preprocessor options in
+the python3 script.  To run the bash script, in terminal or bash, type in
+
+    ./script.sh

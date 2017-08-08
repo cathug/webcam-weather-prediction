@@ -120,9 +120,20 @@ classifier but it is also one of the slowest methods.  The runner up (87.4%) is
 
 ## Post-mortem
 It would be interesing to see if the best accuracy score achieved with `add_image1`
-can be further improved with full scale images.  But 88.8% accuracy is not a bad
-score at all.
+can be further improved with full scale images.    
 
 Also if time permits, it would be interesting to see if converting the images
 to LAB and HSV will affect the accuracy scores given that the latter two are
-more accurate color space models. 
+more accurate color space models.    
+
+
+# Project Experience Summary
+---
+* Simplified testing procedure by adding code in Python to handle unzipping 
+operations
+* Used regex expressions, Pandas, and Numpy to clean a 5,000 line dataset
+* Constructed a machine learning model with 88.8% accuracy using scikit-learn
+* Created Github friendly writeup and documentation using Markdown
+* Manipulated image arrays using Numpy and scikit-image and plotted the results
+using MatPlotLib
+* Wrote a simple bash script to perform batch execution
