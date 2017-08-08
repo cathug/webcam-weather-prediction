@@ -100,13 +100,13 @@ Processing method | Classifier | Accuracy Score
 `add_image2()` | Naïve Bayes | 0.69
   | k-neighbour | 0.786 
   | SVN | 0.835
-`add_image3()` | 0.708
+`add_image3()` | Naïve Bayes | 0.708
   | k-neighbour | 0.802 
   | SVN | 0.851
-`add_image4()`\* | 0.221
+`add_image4()`\* | Naïve Bayes | 0.221
   | k-neighbour | 0.698
   | SVN | 0.694
-`add_image5()` | 0.71
+`add_image5()` | Naïve Bayes | 0.71
   | k-neighbour | 0.796
   | SVN | 0.874
 
