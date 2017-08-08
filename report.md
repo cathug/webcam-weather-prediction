@@ -46,7 +46,7 @@ red, green, and blue layers using `add_image0()`
  
     **Figure 1** *`add_image0()` operation*    
 
-2. Rescale the image to 1/4 scale and reshapes the image array
+2. Rescale the image to 1/4 scale and reshape the image array
 to 1D, and every element is brought in as an independent entry in the dataframe
 using `add_image1()` 
 
@@ -54,7 +54,7 @@ using `add_image1()`
 
     **Figure 2** *`add_image1()` operation*    
 
-3. Divide the image to eight random patches and takes an
+3. Divide the image to eight random patches and take an
 equally weighted scalar average value using `add_image2()` 
 
     ![Figure 3](https://csil-git1.cs.surrey.sfu.ca/byronc/webcam-weather-prediction/blob/master/fig3.png)
@@ -89,38 +89,29 @@ sets.  Methods `add_image1()` and `add_image4()` use PCA reduction to speed up
 classification speeds.  The accuracy scores are shown below:
 
 
-processing method | Accuracy Score 
------------------ | -------------- 
-`add_image0()` | 0.69
-`add_image1()`\* | 0.508
-`add_image2()` | 0.69
+Processing method | Classifier | Accuracy Score 
+----------------- | ---------- | --------------
+`add_image0()` | Naïve Bayes | 0.69
+  | k-neighbour | 0.78 
+  | SVN | 0.836 
+`add_image1()`\* | Naïve Bayes | 0.508
+  | k-neighbour | 0.758 
+  | SVN | 0.888
+`add_image2()` | Naïve Bayes | 0.69
+  | k-neighbour | 0.786 
+  | SVN | 0.835
 `add_image3()` | 0.708
+  | k-neighbour | 0.802 
+  | SVN | 0.851
 `add_image4()`\* | 0.221
+  | k-neighbour | 0.698
+  | SVN | 0.694
 `add_image5()` | 0.71
+  | k-neighbour | 0.796
+  | SVN | 0.874
+
 *\* methods with PCA applied*    
  **Table 1** *Results using naïve Bayes classifier*   
-
-processing method | Accuracy Score 
------------------ | -------------- 
-`add_image0()` | 0.78 
-`add_image1()`\* | 0.758 
-`add_image2()` | 0.786 
-`add_image3()` | 0.802 
-`add_image4()`\* | 0.698
-`add_image5()` | 0.796 
-*\* methods with PCA applied*    
- **Table 2** *Results using k-neighbour classifier*   
-
-processing method | Accuracy Score 
------------------ | -------------- 
-`add_image0()` | 0.836 
-`add_image1()`\* | 0.888
-`add_image2()` | 0.835 
-`add_image3()` | 0.851 
-`add_image4()`\* | 0.694 
-`add_image5()` | 0.874 
-*\* methods with PCA applied*    
- **Table 3** *Results using SVN classifier*   
 
 
 
