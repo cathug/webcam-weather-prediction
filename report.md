@@ -50,34 +50,34 @@ red, green, and blue layers using `add_image0()`
 to 1D, and every element is brought in as an independent entry in the dataframe
 using `add_image1()` 
 
-    ![Figure 2](https://csil-git1.cs.surrey.sfu.ca/byronc/webcam-weather-prediction/blob/master/fig2.png)
+    ![Figure 2](https://csil-git1.cs.surrey.sfu.ca/byronc/webcam-weather-prediction/blob/master/fig2.png?raw=true)
 
     **Figure 2** *`add_image1()` operation*    
 
 3. Divide the image to eight random patches and take an
 equally weighted scalar average value using `add_image2()` 
 
-    ![Figure 3](https://csil-git1.cs.surrey.sfu.ca/byronc/webcam-weather-prediction/blob/master/fig3.png)
+    ![Figure 3](https://csil-git1.cs.surrey.sfu.ca/byronc/webcam-weather-prediction/blob/master/fig3.png?raw=true)
 
     **Figure 3** *`add_image2()` operation*    
 
 4. Create a 1D array from a sky subimage using `add_image3()`
 
-    ![Figure 4](https://csil-git1.cs.surrey.sfu.ca/byronc/webcam-weather-prediction/blob/master/fig4.png)
+    ![Figure 4](https://csil-git1.cs.surrey.sfu.ca/byronc/webcam-weather-prediction/blob/master/fig4.png?raw=true)
 
     **Figure 4** *`add_image3()` operation*    
 
 5. Create an equally weighted scalar average from the cropped sky subimage 
 using `add_image4()`
 
-    ![Figure 5](https://csil-git1.cs.surrey.sfu.ca/byronc/webcam-weather-prediction/blob/master/fig5.png)
+    ![Figure 5](https://csil-git1.cs.surrey.sfu.ca/byronc/webcam-weather-prediction/blob/master/fig5.png?raw=true)
 
     **Figure 5** *`add_image4()` operation*    
 
 6. Create a tuple of scalar average ratings from cropped sky, tree, 
 road, and sea subimages using `add_image5()` 
 
-    ![Figure 6](https://csil-git1.cs.surrey.sfu.ca/byronc/webcam-weather-prediction/blob/master/fig6.png)
+    ![Figure 6](https://csil-git1.cs.surrey.sfu.ca/byronc/webcam-weather-prediction/blob/master/fig6.png?raw=true)
 
     **Figure 6** *`add_image5()` operation*    
 
