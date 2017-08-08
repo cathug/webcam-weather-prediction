@@ -39,48 +39,48 @@ in the image filenames.  Due to memory issues, it is impossible to bring in ever
 pixel data as an independent entry the dataframe.  As a result, six workaround 
 solutions are proposed:    
 
-1.Create an equally weighted average rating of an image from 
+1. Create an equally weighted average rating of an image from 
 red, green, and blue layers using `add_image0()`
 
  ![add_image0()](https://csil-git1.cs.surrey.sfu.ca/byronc/webcam-weather-prediction/blob/master/fig1.png)
  
- ** Figure 1 ** *`add_image0()` operation*
+ **Figure 1** *`add_image0()` operation*
 
 
-2.Rescale the image to 1/4 scale and reshapes the image array
+2. Rescale the image to 1/4 scale and reshapes the image array
 to 1D, and every element is brought in as an independent entry in the dataframe
 using `add_image1()` 
 
  ![add_image1()](https://csil-git1.cs.surrey.sfu.ca/byronc/webcam-weather-prediction/blob/master/fig2.png)
 
- ** Figure 2 ** *`add_image1()` operation*    
+ **Figure 2** *`add_image1()` operation*    
 
-3.Divide the image to eight random patches and takes an
+3. Divide the image to eight random patches and takes an
 equally weighted scalar average value using `add_image2()` 
 
  ![add_image2()](https://csil-git1.cs.surrey.sfu.ca/byronc/webcam-weather-prediction/blob/master/fig3.png)
 
- ** Figure 3 ** *`add_image2()` operation*    
+ **Figure 3** *`add_image2()` operation*    
 
-4.Create a 1D array from a sky subimage using `add_image3()`
+4. Create a 1D array from a sky subimage using `add_image3()`
 
  ![add_image3()](https://csil-git1.cs.surrey.sfu.ca/byronc/webcam-weather-prediction/blob/master/fig4.png)
 
- ** Figure 4 ** *`add_image3()` operation*    
+ **Figure 4** *`add_image3()` operation*    
 
-5.Create an equally weighted scalar average from the cropped sky subimage 
+5. Create an equally weighted scalar average from the cropped sky subimage 
 using `add_image4()`
 
  ![add_image4()](https://csil-git1.cs.surrey.sfu.ca/byronc/webcam-weather-prediction/blob/master/fig5.png)
 
- ** Figure 5 ** *`add_image4()` operation*    
+ **Figure 5** *`add_image4()` operation*    
 
-6.Create a tuple of scalar average ratings from cropped sky, tree, 
+6. Create a tuple of scalar average ratings from cropped sky, tree, 
 road, and sea subimages using `add_image5()` 
 
  ![add_image5()](https://csil-git1.cs.surrey.sfu.ca/byronc/webcam-weather-prediction/blob/master/fig6.png)
 
- ** Figure 6 ** *`add_image5()` operation*    
+ **Figure 6** *`add_image5()` operation*    
 
 
 ## Classifiers and accuracy scores
@@ -99,7 +99,7 @@ processing method | Accuracy Score
 `add_image4()`\* | 0.221
 `add_image5()` | 0.71
 *\* methods with PCA applied*    
- ** Table 1 ** *Results using naïve Bayes classifier*   
+ **Table 1** *Results using naïve Bayes classifier*   
 
 processing method | Accuracy Score 
 ----------------- | -------------- 
@@ -110,7 +110,7 @@ processing method | Accuracy Score
 `add_image4()`\* | 0.698
 `add_image5()` | 0.796 
 *\* methods with PCA applied*    
- ** Table 2 ** *Results using k-neighbour classifier*   
+ **Table 2** *Results using k-neighbour classifier*   
 
 processing method | Accuracy Score 
 ----------------- | -------------- 
@@ -121,7 +121,7 @@ processing method | Accuracy Score
 `add_image4()`\* | 0.694 
 `add_image5()` | 0.874 
 *\* methods with PCA applied*    
- ** Table 3 ** *Results using SVN classifier*   
+ **Table 3** *Results using SVN classifier*   
 
 
 
