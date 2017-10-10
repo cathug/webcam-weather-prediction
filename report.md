@@ -90,26 +90,26 @@ sets.  Methods `add_image1()` and `add_image4()` use PCA reduction to speed up
 classification speeds.  The accuracy scores are shown below:
 
 
-Processing method | Classifier | Accuracy Score
------------------ | ---------- | --------------
-`add_image0()` | Naïve Bayes | 0.69
-  | k-neighbour | 0.78 
-  | SVN | 0.836 
-`add_image1()`\* | Naïve Bayes | 0.508
-  | k-neighbour | 0.758 
-  | SVN | 0.888
-`add_image2()` | Naïve Bayes | 0.69
-  | k-neighbour | 0.786 
-  | SVN | 0.835
-`add_image3()` | Naïve Bayes | 0.708
-  | k-neighbour | 0.802 
-  | SVN | 0.851
-`add_image4()`\* | Naïve Bayes | 0.221
-  | k-neighbour | 0.698
-  | SVN | 0.694
-`add_image5()` | Naïve Bayes | 0.71
-  | k-neighbour | 0.796
-  | SVN | 0.874
+Processing method | Classifier  | Accuracy Score
+----------------- | ----------  | --------------
+`add_image0()`    | Naïve Bayes | 0.69
+                  | k-neighbour | 0.78 
+                  | SVN         | 0.836 
+`add_image1()`\*  | Naïve Bayes | 0.508
+                  | k-neighbour | 0.758 
+                  | SVN         | 0.888
+`add_image2()`    | Naïve Bayes | 0.69
+                  | k-neighbour | 0.786 
+                  | SVN         | 0.835
+`add_image3()`    | Naïve Bayes | 0.708
+                  | k-neighbour | 0.802 
+                  | SVN         | 0.851
+`add_image4()`\*  | Naïve Bayes | 0.221
+                  | k-neighbour | 0.698
+                  | SVN         | 0.694
+`add_image5()`    | Naïve Bayes | 0.71
+                  | k-neighbour | 0.796
+                  | SVN         | 0.874
 
 *\* methods with PCA applied*    
  **Table 1** *Summary of results using naïve Bayes, k-neighbour, and SVN classifiers*   
