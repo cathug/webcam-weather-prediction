@@ -1,11 +1,7 @@
 # Webcam Weather Prediction
----
 
-
-This submission contains several prediction models for the Webcam Weather 
+This repository contains several prediction models for the Webcam Weather 
 Prediction assignment.
-
-
 
 ---
 
