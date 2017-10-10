@@ -1,6 +1,7 @@
 # Webcam Weather Prediction Report
 
 Last revised: 10/9/2017 (moved repository from SFU Gitlab to Github)
+
 ---
 
 ## Problem
